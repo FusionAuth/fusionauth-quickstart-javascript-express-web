@@ -1,0 +1,22 @@
+{
+    "name": "fusionauth-quickstart-javascript-express-web",
+    "version": "1.0.0",
+    "description": "Example of setting up an express application with typescript.",
+    "scripts": {
+        "dev": "ts-node-dev --exit-child src/index.ts",
+        "setup": "ts-node src/setup.ts"
+    },
+    "author": "Alex Patterson",
+    "license": "Apache-2.0",
+    "dependencies": {
+      "@fusionauth/typescript-client": "^1.46.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.4.2",
+        "ts-node": "^10.9.1",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.1.6"
+    }
+  }
+  
+  
