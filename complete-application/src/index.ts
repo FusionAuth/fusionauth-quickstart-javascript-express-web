@@ -28,15 +28,15 @@ app.use('/static', express.static(path.join(__dirname, '../static/')))
 
 //tag::homepage[]
 app.get("/", async (req, res) => {
-    const stateValue = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const pkcePair = await pkceChallenge();
-    res.cookie(cookieName, { stateValue, verifier: pkcePair.code_verifier, challenge: pkcePair.code_challenge }, { httpOnly: true });
-
     const user = req.cookies[userCookie];
 
     if (user) {
         res.sendFile(path.join(__dirname, '../templates/account.html'));
     } else {
+        const stateValue = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const pkcePair = await pkceChallenge();
+        res.cookie(cookieName, { stateValue, verifier: pkcePair.code_verifier, challenge: pkcePair.code_challenge }, { httpOnly: true });
+
         res.sendFile(path.join(__dirname, '../templates/home.html'));
     }
 });
