@@ -94,7 +94,7 @@ app.get('/oauth-redirect', async (req, res, next) => {
     }
     res.cookie(userDetails, userResponse.user);
 
-    res.redirect(302, '/');
+    res.redirect(302, '/account');
 });
 //end::oauth-redirect[]
 
