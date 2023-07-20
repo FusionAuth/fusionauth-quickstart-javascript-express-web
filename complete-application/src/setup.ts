@@ -7,6 +7,7 @@ import FusionAuthClient, { GrantType, KeyAlgorithm } from "@fusionauth/typescrip
  * is meant to show off how to use the SDK on a Serverside example.
 **/
 
+const APPLICATION_ID = "e9fdb985-9173-4e01-9d73-ac2d60d1dc8e";
 const TENANT_ID = "d7d09513-a3f5-401c-9685-34ab6c552453"
 const API_KEY = "33052c8a-c283-4e96-9d2a-eb1215c69f8f-not-for-prod"
 const RSA_KEY_ID = "356a6624-b33c-471a-b707-48bbfcfbc593"
@@ -31,19 +32,19 @@ const generateKey = async () => {
 
 // Application: http://localhost:9011/admin/application/
 const createApplication = async () => {
-    return client.createApplication('', {
+    return client.createApplication(APPLICATION_ID, {
         application: {
             name: 'JSExampleApp',
             oauthConfiguration: {
                 authorizedRedirectURLs: [
-                    'http://localhost:3000'
+                    'http://localhost:8080/oauth-redirect'
                 ],
                 requireRegistration: true,
                 enabledGrants: [
                     GrantType.authorization_code,
                     GrantType.refresh_token
                 ],
-                logoutURL: 'http://localhost:3000/logout',
+                logoutURL: 'http://localhost:8080/logout',
                 clientSecret: '2HYT86lWSAntc-mvtHLX5XXEpk9ThcqZb4YEh65CLjA-not-for-prod'
             },
             // assign key from above to sign our tokens. This needs to be asymmetric
