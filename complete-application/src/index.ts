@@ -21,34 +21,10 @@ const client = new FusionAuthClient('noapikeyneeded', fusionAuthURL);
 app.use(cookieParser());
 //end::top[]
 
-//tag::logout[]
-app.get('/logout', function (req, res, next) {
-    console.log('Logging out...')
-    res.clearCookie(cookieName);
-    res.clearCookie(userCookie);
-
-    const userSession = req.cookies[cookieName];
-
-    if (userSession) {
-        res.redirect(302, `${fusionAuthURL}/oauth2/logout?client_id=${clientId}`);
-    } else {
-        res.redirect(302, '/')
-    }
-});
-//end::logout[]
-
-//tag::login[]
-app.get('/login', function (req, res, next) {
-    const userSession = req.cookies[cookieName];
-
-    // Cookie was cleared, just send back (hacky way)
-    if (!userSession?.stateValue || !userSession?.challenge) {
-        res.redirect(302, '/');
-    }
-
-    res.redirect(302, `${fusionAuthURL}/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:${port}/oauth-redirect&state=${userSession?.stateValue}&code_challenge=${userSession?.challenge}&code_challenge_method=S256`)
-});
-//end::logout[]
+// Static Files
+//tag::static[]
+app.use('/static', express.static(path.join(__dirname, '../static/')))
+//end::static[]
 
 //tag::homepage[]
 app.get("/", async (req, res) => {
@@ -65,6 +41,19 @@ app.get("/", async (req, res) => {
     }
 });
 //end::homepage[]
+
+//tag::login[]
+app.get('/login', function (req, res, next) {
+    const userSession = req.cookies[cookieName];
+
+    // Cookie was cleared, just send back (hacky way)
+    if (!userSession?.stateValue || !userSession?.challenge) {
+        res.redirect(302, '/');
+    }
+
+    res.redirect(302, `${fusionAuthURL}/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:${port}/oauth-redirect&state=${userSession?.stateValue}&code_challenge=${userSession?.challenge}&code_challenge_method=S256`)
+});
+//end::login[]
 
 //tag::oauth-redirect[]
 app.get('/oauth-redirect', function (req, res, next) {
@@ -100,11 +89,21 @@ app.get('/oauth-redirect', function (req, res, next) {
 });
 //end::oauth-redirect[]
 
-// Static Files
-//tag::static[]
-app.use('/static', express.static(path.join(__dirname, '../static/')))
-//end::static[]
+//tag::logout[]
+app.get('/logout', function (req, res, next) {
+    console.log('Logging out...')
+    res.clearCookie(cookieName);
+    res.clearCookie(userCookie);
 
+    const userSession = req.cookies[cookieName];
+
+    if (userSession) {
+        res.redirect(302, `${fusionAuthURL}/oauth2/logout?client_id=${clientId}`);
+    } else {
+        res.redirect(302, '/')
+    }
+});
+//end::logout[]
 
 // start the Express server
 //tag::app[]
