@@ -19,7 +19,7 @@ const client = new FusionAuthClient('noapikeyneeded', fusionAuthURL);
 
 app.use(cookieParser());
 
-/* logout page. */
+//tag::logout[]
 app.get('/logout', function (req, res, next) {
     console.log('Logging out...')
     res.clearCookie(cookieName);
@@ -33,7 +33,9 @@ app.get('/logout', function (req, res, next) {
         res.redirect(302, '/')
     }
 });
+//end::logout[]
 
+//tag::login[]
 app.get('/login', function (req, res, next) {
     const userSession = req.cookies[cookieName];
 
@@ -44,8 +46,9 @@ app.get('/login', function (req, res, next) {
 
     res.redirect(302, `${fusionAuthURL}/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:${port}/oauth-redirect&state=${userSession?.stateValue}&code_challenge=${userSession?.challenge}&code_challenge_method=S256`)
 });
+//end::logout[]
 
-// define a route handler for the default home page
+//tag::homepage[]
 app.get("/", async (req, res) => {
     const stateValue = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const pkcePair = await pkceChallenge();
@@ -59,7 +62,9 @@ app.get("/", async (req, res) => {
         res.sendFile(path.join(__dirname, '../templates/home.html'));
     }
 });
+//end::homepage[]
 
+//tag::oauth-redirect[]
 app.get('/oauth-redirect', function (req, res, next) {
     const stateFromFusionAuth = req.query?.state;
     const userSession = req.cookies[cookieName];
@@ -91,11 +96,17 @@ app.get('/oauth-redirect', function (req, res, next) {
         }).catch((err) => { console.log("in error"); console.error(JSON.stringify(err)); });
 
 });
+//end::oauth-redirect[]
 
 // Static Files
+//tag::static[]
 app.use('/static', express.static(path.join(__dirname, '../static/')))
+//end::static[]
+
 
 // start the Express server
+//tag::app[]
 app.listen(port, () => {
     console.log(`server started at http://localhost:${port}`);
 });
+//end::app[]
