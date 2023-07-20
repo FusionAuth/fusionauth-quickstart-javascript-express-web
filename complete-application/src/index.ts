@@ -1,3 +1,4 @@
+//tag::top[]
 import FusionAuthClient from "@fusionauth/typescript-client";
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -18,6 +19,7 @@ const userCookie = 'userDetails';
 const client = new FusionAuthClient('noapikeyneeded', fusionAuthURL);
 
 app.use(cookieParser());
+//end::top[]
 
 //tag::logout[]
 app.get('/logout', function (req, res, next) {
