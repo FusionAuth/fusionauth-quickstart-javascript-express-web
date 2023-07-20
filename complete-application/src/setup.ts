@@ -63,7 +63,11 @@ const createApplication = async () => {
 
 // Users: http://localhost:9011/admin/user/
 const getFirstUser = async () => {
-    const users = (await client.searchUsersByQuery({ "search": { "queryString": "*richard@example.com*" } })).response.users;
+    const users = (await client.searchUsersByQuery({
+        search: {
+            queryString: "*richard@example.com*"
+        }
+    })).response.users;
     return users?.at(0);
 }
 
