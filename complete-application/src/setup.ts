@@ -16,7 +16,11 @@ const client = new FusionAuthClient(API_KEY, 'http://localhost:9011', TENANT_ID)
 
 // Issuer: http://localhost:9011/admin/tenant/edit/d7d09513-a3f5-401c-9685-34ab6c552453
 const patchTenant = async () => {
-    return client.patchTenant(TENANT_ID, { "tenant": { "issuer": "http://localhost:9011" } })
+    return client.patchTenant(TENANT_ID, {
+        tenant: {
+            issuer: "http://localhost:9011"
+        }
+    })
 }
 
 // Key: http://localhost:9011/admin/key/
