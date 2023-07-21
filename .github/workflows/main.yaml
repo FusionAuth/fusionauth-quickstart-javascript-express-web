@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 18
       # Set up the build environment
-      - run: npm ci
+      - run: npm ci --prefix "./complete-application/"
 
       # Build
 
