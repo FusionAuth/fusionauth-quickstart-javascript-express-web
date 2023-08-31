@@ -25,24 +25,40 @@
       <div class="column-container">
         <div class="app-container change-container">
           <h3>We Make Change</h3>
-
-          {% if change["error"] is not none: %}
-            <div class="error-message">{{change.error}}</div>
-          {% else: %}
+            <div class="error-message"></div>
             <div class="change-message">
-              We can make change for ${{change.total}} with {{change.nickels}} nickels and {{change.pennies}} pennies!
             </div>
-          {% endif %}
 
-          <form method="post" action="/make-change">
+          <form onsubmit="makeChange(event)" id="make-change-form">
             <div class="h-row">
               <div class="change-label">Amount in USD: $</div>
-              <input class="change-input" name="amount" value="0.00" />
+              <input class="change-input" name="amount" id="amount" value="0.00" type="number" step="0.01" />
               <input class="change-submit" type="submit" value="Make Change" />
             </div>
           </form>
         </div>
       </div>
     </div>
+
+    <script>
+      // Snag cookie user data
+      const user = JSON.parse(decodeURIComponent(document.cookie.split('; ').filter(c => c.includes('userDetails')).at(0).split('=').at(-1)).replace('j:', ''))
+      document.querySelector('.header-email').innerHTML = user.email;
+
+      const makeChange = async (e) => {
+        e.preventDefault();
+
+        const resp = await (await fetch('/make-change', {
+          method: 'POST',
+          body: new URLSearchParams(new FormData(e.currentTarget)),
+          headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })).json();
+        const result = JSON.parse(resp);
+        result.error ? document.querySelector('.error-message').innerHTML = result.error : document.querySelector('.error-message').innerHTML = '';
+        document.querySelector('.change-message').innerHTML = result.message;
+      }
+    </script>
 </body>
 </html>

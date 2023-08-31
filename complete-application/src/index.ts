@@ -22,6 +22,9 @@ const userDetails = 'userDetails'; //Non Http-Only with user info (not trusted)
 const client = new FusionAuthClient('noapikeyneeded', fusionAuthURL);
 
 app.use(cookieParser());
+/** Decode Form URL Encoded data */
+app.use(express.urlencoded());
+
 //end::top[]
 
 // Static Files
@@ -111,6 +114,62 @@ app.get("/account", async (req, res) => {
     }
 });
 //end::account[]
+
+//tag::make-change[]
+app.get("/make-change", async (req, res) => {
+    const userTokenCookie = req.cookies[userToken];
+
+    // Make sure the user is authenticated. Note that in a production application, we would validate the token signature, 
+    // make sure it wasn't expired, and attempt to refresh it if it were
+    if (!userTokenCookie) {
+        res.redirect(302, '/');
+    } else {
+        res.sendFile(path.join(__dirname, '../templates/make-change.html'));
+    }
+});
+
+app.post("/make-change", async (req, res) => {
+    const userTokenCookie = req.cookies[userToken];
+
+    // Make sure the user is authenticated. Note that in a production application, we would validate the token signature, 
+    // make sure it wasn't expired, and attempt to refresh it if it were
+    if (!userTokenCookie) {
+        res.status(403).json(JSON.stringify({
+            error: 'Unauthorized'
+        }))
+    } else {
+
+        let error;
+        let message;
+
+        var coins = {
+            quarters: 0.25,
+            dimes: 0.1,
+            nickels: 0.05,
+            pennies: 0.01,
+        };
+
+        try {
+            message = 'We can make change for';
+            let remainingAmount = +req.body.amount;
+            for (const [name, nominal] of Object.entries(coins)) {
+                let count = Math.floor(remainingAmount / nominal);
+                remainingAmount =
+                    Math.ceil((remainingAmount - count * nominal) * 100) / 100;
+
+                message = `${message} ${count} ${name}`;
+            }
+            `${message}!`;
+        } catch (ex: any) {
+            error = `There was a problem converting the amount submitted. ${ex.message}`;
+        }
+        res.json(JSON.stringify({
+            error,
+            message
+        }))
+    }
+});
+//end::make-change[]
 
 //tag::logout[]
 app.get('/logout', (req, res, next) => {
