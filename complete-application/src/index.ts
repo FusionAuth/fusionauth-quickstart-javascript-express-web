@@ -155,7 +155,7 @@ app.post("/make-change", async (req, res) => {
             for (const [name, nominal] of Object.entries(coins)) {
                 let count = Math.floor(remainingAmount / nominal);
                 remainingAmount =
-                    Math.ceil((remainingAmount - count * nominal) * 100) / 100;
+                    Math.round((remainingAmount - count * nominal) * 100) / 100;
 
                 message = `${message} ${count} ${name}`;
             }
