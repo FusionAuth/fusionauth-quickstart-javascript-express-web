@@ -22,10 +22,10 @@ The `/complete-application` directory contains a fully working version of the ap
 > Kickstart will only run if no API keys, users or tenants exist. If any exist, Kickstart will not run.
 > You can remove docker containers and volumes by calling `docker compose down -v`
 
-To run FusionAuth, just stand up the docker containers using `docker-compose`.
+To run FusionAuth, just stand up the docker containers using `docker compose`.
 
 ```shell
-docker-compose up
+docker compose up
 ```
 
 This will start a PostgreSQL database, and Elastic service, and the FusionAuth server.
