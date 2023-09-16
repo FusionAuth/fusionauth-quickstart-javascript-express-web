@@ -3,6 +3,8 @@ import FusionAuthClient from "@fusionauth/typescript-client";
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import pkceChallenge from 'pkce-challenge';
+import { GetPublicKeyOrSecret, verify } from 'jsonwebtoken';
+import jwksClient, { RsaSigningKey } from 'jwks-rsa';
 import * as path from 'path';
 
 // Add environment variables
@@ -28,7 +30,33 @@ const clientId = process.env.clientId;
 const clientSecret = process.env.clientSecret;
 const fusionAuthURL = process.env.fusionAuthURL;
 
-console.log(fusionAuthURL)
+// Validate the token signature, make sure it wasn't expired
+const validateUser = async (userTokenCookie: { access_token: string }) => {
+    // Make sure the user is authenticated.
+    if (!userTokenCookie || !userTokenCookie?.access_token) {
+        return false;
+    }
+    try {
+        let decodedFromJwt;
+        await verify(userTokenCookie.access_token, await getKey, undefined, (err, decoded) => {
+            decodedFromJwt = decoded;
+        });
+        return decodedFromJwt;
+    } catch (err) {
+        console.error(err);
+        return false;
+    }
+}
+
+
+const getKey: GetPublicKeyOrSecret = async (header, callback) => {
+    const jwks = jwksClient({
+        jwksUri: `${fusionAuthURL}/.well-known/jwks.json`
+    });
+    const key = await jwks.getSigningKey(header.kid) as RsaSigningKey;
+    var signingKey = key?.getPublicKey() || key?.rsaPublicKey;
+    callback(null, signingKey);
+}
 
 //Cookies
 const userSession = 'userSession';
@@ -51,8 +79,7 @@ app.use('/static', express.static(path.join(__dirname, '../static/')))
 //tag::homepage[]
 app.get("/", async (req, res) => {
     const userTokenCookie = req.cookies[userToken];
-
-    if (userTokenCookie) {
+    if (await validateUser(userTokenCookie)) {
         res.redirect(302, '/account');
     } else {
         const stateValue = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -120,10 +147,7 @@ app.get('/oauth-redirect', async (req, res, next) => {
 //tag::account[]
 app.get("/account", async (req, res) => {
     const userTokenCookie = req.cookies[userToken];
-
-    // Make sure the user is authenticated. Note that in a production application, we would validate the token signature, 
-    // make sure it wasn't expired, and attempt to refresh it if it were
-    if (!userTokenCookie) {
+    if (!await validateUser(userTokenCookie)) {
         res.redirect(302, '/');
     } else {
         res.sendFile(path.join(__dirname, '../templates/account.html'));
@@ -134,10 +158,7 @@ app.get("/account", async (req, res) => {
 //tag::make-change[]
 app.get("/make-change", async (req, res) => {
     const userTokenCookie = req.cookies[userToken];
-
-    // Make sure the user is authenticated. Note that in a production application, we would validate the token signature, 
-    // make sure it wasn't expired, and attempt to refresh it if it were
-    if (!userTokenCookie) {
+    if (!await validateUser(userTokenCookie)) {
         res.redirect(302, '/');
     } else {
         res.sendFile(path.join(__dirname, '../templates/make-change.html'));
@@ -146,44 +167,42 @@ app.get("/make-change", async (req, res) => {
 
 app.post("/make-change", async (req, res) => {
     const userTokenCookie = req.cookies[userToken];
-
-    // Make sure the user is authenticated. Note that in a production application, we would validate the token signature, 
-    // make sure it wasn't expired, and attempt to refresh it if it were
-    if (!userTokenCookie) {
+    if (!await validateUser(userTokenCookie)) {
         res.status(403).json(JSON.stringify({
             error: 'Unauthorized'
         }))
-    } else {
-
-        let error;
-        let message;
-
-        var coins = {
-            quarters: 0.25,
-            dimes: 0.1,
-            nickels: 0.05,
-            pennies: 0.01,
-        };
-
-        try {
-            message = 'We can make change for';
-            let remainingAmount = +req.body.amount;
-            for (const [name, nominal] of Object.entries(coins)) {
-                let count = Math.floor(remainingAmount / nominal);
-                remainingAmount =
-                    Math.round((remainingAmount - count * nominal) * 100) / 100;
-
-                message = `${message} ${count} ${name}`;
-            }
-            `${message}!`;
-        } catch (ex: any) {
-            error = `There was a problem converting the amount submitted. ${ex.message}`;
-        }
-        res.json(JSON.stringify({
-            error,
-            message
-        }))
+        return;
     }
+
+    let error;
+    let message;
+
+    var coins = {
+        quarters: 0.25,
+        dimes: 0.1,
+        nickels: 0.05,
+        pennies: 0.01,
+    };
+
+    try {
+        message = 'We can make change for';
+        let remainingAmount = +req.body.amount;
+        for (const [name, nominal] of Object.entries(coins)) {
+            let count = Math.floor(remainingAmount / nominal);
+            remainingAmount =
+                Math.round((remainingAmount - count * nominal) * 100) / 100;
+
+            message = `${message} ${count} ${name}`;
+        }
+        `${message}!`;
+    } catch (ex: any) {
+        error = `There was a problem converting the amount submitted. ${ex.message}`;
+    }
+    res.json(JSON.stringify({
+        error,
+        message
+    }))
+
 });
 //end::make-change[]
 
