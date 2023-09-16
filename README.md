@@ -52,12 +52,6 @@ Install dependencies
 npm install
 ```
 
-Run Setup in `/complete-application/src/setup.ts`
-
-```shell
-npm run setup
-```
-
 Start the application
 
 ```shell
