@@ -5,14 +5,30 @@ import cookieParser from 'cookie-parser';
 import pkceChallenge from 'pkce-challenge';
 import * as path from 'path';
 
+// Add environment variables
+import * as dotenv from "dotenv";
+dotenv.config();
+
 const app = express();
 const port = 8080; // default port to listen
 
+if (!process.env.clientId) {
+    console.error('Missing clientId from .env');
+    process.exit();
+}
+if (!process.env.clientSecret) {
+    console.error('Missing clientSecret from .env');
+    process.exit();
+}
+if (!process.env.fusionAuthURL) {
+    console.error('Missing clientSecret from .env');
+    process.exit();
+}
+const clientId = process.env.clientId;
+const clientSecret = process.env.clientSecret;
+const fusionAuthURL = process.env.fusionAuthURL;
 
-//API Keys: http://localhost:9011/admin/api-key/
-const clientId = "e9fdb985-9173-4e01-9d73-ac2d60d1dc8e";
-const clientSecret = "2HYT86lWSAntc-mvtHLX5XXEpk9ThcqZb4YEh65CLjA-not-for-prod"
-const fusionAuthURL = 'http://localhost:9011';
+console.log(fusionAuthURL)
 
 //Cookies
 const userSession = 'userSession';
