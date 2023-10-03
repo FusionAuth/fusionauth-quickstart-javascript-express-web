@@ -119,28 +119,35 @@ app.get('/oauth-redirect', async (req, res, next) => {
         return;
     }
 
-    // Exchange Auth Code and Verifier for Access Token
-    const accessToken = (await client.exchangeOAuthCodeForAccessTokenUsingPKCE(authCode,
-        clientId,
-        clientSecret,
-        `http://localhost:${port}/oauth-redirect`,
-        userSessionCookie.verifier)).response;
+    try {
+        // Exchange Auth Code and Verifier for Access Token
+        const accessToken = (await client.exchangeOAuthCodeForAccessTokenUsingPKCE(authCode,
+            clientId,
+            clientSecret,
+            `http://localhost:${port}/oauth-redirect`,
+            userSessionCookie.verifier)).response;
 
-    if (!accessToken.access_token) {
-        console.error('Failed to get Access Token')
-        return;
+        if (!accessToken.access_token) {
+            console.error('Failed to get Access Token')
+            return;
+        }
+        res.cookie(userToken, accessToken, { httpOnly: true })
+
+        // Exchange Access Token for User
+        const userResponse = (await client.retrieveUserUsingJWT(accessToken.access_token)).response;
+        if (!userResponse?.user) {
+            console.error('Failed to get User from access token, redirecting home.');
+            res.redirect(302, '/');
+        }
+        res.cookie(userDetails, userResponse.user);
+
+        res.redirect(302, '/account');
+    } catch (err: any) {
+        console.error(err);
+        res.status(err?.statusCode || 500).json(JSON.stringify({
+            error: err
+        }))
     }
-    res.cookie(userToken, accessToken, { httpOnly: true })
-
-    // Exchange Access Token for User
-    const userResponse = (await client.retrieveUserUsingJWT(accessToken.access_token)).response;
-    if (!userResponse?.user) {
-        console.error('Failed to get User from access token, redirecting home.');
-        res.redirect(302, '/');
-    }
-    res.cookie(userDetails, userResponse.user);
-
-    res.redirect(302, '/account');
 });
 //end::oauth-redirect[]
 
