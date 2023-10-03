@@ -215,20 +215,20 @@ app.post("/make-change", async (req, res) => {
 
 //tag::logout[]
 app.get('/logout', (req, res, next) => {
+    res.redirect(302, `${fusionAuthURL}/oauth2/logout?client_id=${clientId}`);
+});
+//end::logout[]
+
+//tag::oauth-logout[]
+app.get('/oauth2/logout', (req, res, next) => {
     console.log('Logging out...')
     res.clearCookie(userSession);
     res.clearCookie(userToken);
     res.clearCookie(userDetails);
 
-    const userSessionCookie = req.cookies[userSession];
-
-    if (userSessionCookie) {
-        res.redirect(302, `${fusionAuthURL}/oauth2/logout?client_id=${clientId}`);
-    } else {
-        res.redirect(302, '/')
-    }
+    res.redirect(302, '/')
 });
-//end::logout[]
+//end::oauth-logout[]
 
 // start the Express server
 //tag::app[]
