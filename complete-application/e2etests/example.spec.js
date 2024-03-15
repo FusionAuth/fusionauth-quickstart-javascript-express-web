@@ -32,11 +32,14 @@ test('log in', async ({ page }) => {
   await login.click();
   await expect(page).toHaveTitle(/Login | FusionAuth/);
 
-  await page.locator('input[name="loginId"]').fill("richard@example.com");
-  await page.locator('input[name="password"]').fill("password");
+  const loginId = await page.locator('#loginId');
+  await loginId.fill("richard@example.com");
+  const pw = await page.locator('#password');
+  await pw.fill("password");
 
   //only button
-  await page.getByRole('button').click();
+  const button = await page.locator('.button.blue');
+  await button.click();
   await expect(page).toHaveTitle(/FusionAuth Express Web/);
 
   // Expect to see the user's email on the page
