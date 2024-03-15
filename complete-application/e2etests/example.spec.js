@@ -2,14 +2,14 @@
 const { test, expect } = require('@playwright/test');
 
 test('has title', async ({ page }) => {
-  await page.goto('http:/localhost:8080/');
+  await page.goto('http://localhost:8080/');
 
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/FusionAuth Express Web/);
 });
 
 test('log in', async ({ page }) => {
-  await page.goto('http:/localhost:8080/');
+  await page.goto('http://localhost:8080/');
 
   // Create a locator.
   const login = page.getByRole('link', { name: 'Login' });
@@ -26,7 +26,7 @@ test('log in', async ({ page }) => {
 });
 
 test('log in failure', async ({ page }) => {
-  await page.goto('http:/localhost:8080/');
+  await page.goto('http://localhost:8080/');
 
   // Create a locator.
   const login = page.getByRole('link', { name: 'Login' });
