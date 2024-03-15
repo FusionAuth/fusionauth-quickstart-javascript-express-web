@@ -10,7 +10,7 @@ test('has title', async ({ page }) => {
 
 test('FA has title', async ({ page }) => {
   await page.goto('http://localhost:9011/admin');
-  await page.waitForURL('**/oauth2/authorize**');
+  await page.waitForURL('**/oauth2/authorize**', {timeout: 5000});
 
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/Login | FusionAuth/);
@@ -18,8 +18,7 @@ test('FA has title', async ({ page }) => {
 
 test('FA has title with redirect', async ({ page }) => {
   await page.goto('http://localhost:8080/login');
-  await page.waitForURL('**/oauth2/authorize**');
-
+  await page.waitForURL('**/oauth2/authorize**', {timeout: 5000});
 
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/Login | FusionAuth/);
