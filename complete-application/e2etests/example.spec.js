@@ -32,6 +32,9 @@ test('log in', async ({ page }) => {
   await login.click();
   await expect(page).toHaveTitle(/Login | FusionAuth/);
 
+  await expect(page.locator('#loginId')).toBeVisible();
+  await expect(page.locator('#password')).toBeVisible();
+
   const loginId = await page.locator('#loginId');
   await loginId.fill("richard@example.com");
   const pw = await page.locator('#password');
