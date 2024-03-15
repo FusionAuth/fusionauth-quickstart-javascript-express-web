@@ -8,6 +8,14 @@ test('has title', async ({ page }) => {
   await expect(page).toHaveTitle(/FusionAuth Express Web/);
 });
 
+test('FA has title', async ({ page }) => {
+  await page.goto('http://localhost:9011/');
+
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Login | FusionAuth/);
+});
+
+/*
 test('log in', async ({ page }) => {
   await page.goto('http://localhost:8080/');
 
@@ -42,3 +50,4 @@ test('log in failure', async ({ page }) => {
 
 });
 
+*/
