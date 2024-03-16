@@ -25,6 +25,8 @@ jobs:
         uses: fusionauth/fusionauth-github-action@0.0.4
         with:
           FUSIONAUTH_VERSION: 1.48.3
+      - name: List directory
+        run: ls -1
       - name: Install npm dependencies
         run: |
           npm install
