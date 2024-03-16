@@ -28,7 +28,7 @@ jobs:
         with:
           FUSIONAUTH_VERSION: 1.48.3
       - name: List directory
-        run: ls -1
+        run: ls -l faDockerComposeFilePath/kickstart
       - name: Install npm dependencies
         run: |
           npm install
