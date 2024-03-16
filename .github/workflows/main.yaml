@@ -22,11 +22,12 @@ jobs:
 
       # Build
       - name: Copy our kickstart file over so it gets picked up
-        run: mkdir faDockerComposeFilePath/ && cp -r kickstart faDockerComposeFilePath/
+        run: mkdir faDockerComposeFilePath/ && cp -r kickstart faDockerComposeFilePath/ && cp kickstart/kickstart.json faDockerComposeFilePath/kickstart/k2.json
       - name: Start FusionAuth
         uses: fusionauth/fusionauth-github-action@0.0.4
         with:
           FUSIONAUTH_VERSION: 1.48.3
+          FUSIONAUTH_APP_KICKSTART_FILE: /usr/local/fusionauth/kickstart/k2.json
       - name: List directory
         run: ls -l faDockerComposeFilePath/kickstart
       - name: Install npm dependencies
