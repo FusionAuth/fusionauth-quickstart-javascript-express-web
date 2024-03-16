@@ -23,6 +23,8 @@ jobs:
       # Build
       - name: Copy our kickstart file over so it gets picked up
         run: mkdir faDockerComposeFilePath/ && cp -r kickstart faDockerComposeFilePath/ && cp kickstart/kickstart.json faDockerComposeFilePath/kickstart/k2.json
+      - name: List directory before starting FA
+        run: ls -l faDockerComposeFilePath/kickstart
       - name: Start FusionAuth
         uses: fusionauth/fusionauth-github-action@0.0.4
         with:
