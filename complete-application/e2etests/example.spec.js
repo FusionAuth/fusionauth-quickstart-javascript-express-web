@@ -31,7 +31,7 @@ test('log in', async ({ page }) => {
   const login = page.getByRole('link', { name: 'Login' });
   await login.click();
   await expect(page).toHaveTitle(/Login | FusionAuth/);
-  await page.screenshot({ path: 'screenshot.png' });
+  // await page.screenshot({ path: 'screenshot.png' });
 
   await expect(page.locator('#loginId')).toBeVisible();
   await expect(page.locator('#password')).toBeVisible();
@@ -51,7 +51,6 @@ test('log in', async ({ page }) => {
 
 });
 
-/*
 test('log in failure', async ({ page }) => {
   await page.goto('http://localhost:8080/');
 
@@ -69,4 +68,3 @@ test('log in failure', async ({ page }) => {
 
 });
 
-*/
