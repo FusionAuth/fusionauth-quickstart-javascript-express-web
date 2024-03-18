@@ -26,10 +26,10 @@ jobs:
       - name: List directory before starting FA
         run: ls -l faDockerComposeFilePath/kickstart
       - name: Start FusionAuth
-        uses: fusionauth/fusionauth-github-action@0.0.4
+        uses: fusionauth/fusionauth-github-action@0.0.5
         with:
           FUSIONAUTH_VERSION: 1.48.3
-          FUSIONAUTH_APP_KICKSTART_FILE: /usr/local/fusionauth/kickstart/k2.json
+          FUSIONAUTH_APP_KICKSTART_DIRECTORY_PATH: kickstart
       - name: List directory
         run: ls -l faDockerComposeFilePath/kickstart
       - name: Install npm dependencies
