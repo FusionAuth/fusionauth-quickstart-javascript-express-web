@@ -24,7 +24,7 @@ jobs:
       - name: Copy our kickstart file over so it gets picked up
         run: mkdir faDockerComposeFilePath/ && cp -r kickstart faDockerComposeFilePath/ && cp kickstart/kickstart.json faDockerComposeFilePath/kickstart/k2.json
       - name: Start FusionAuth
-        uses: fusionauth/fusionauth-github-action@1
+        uses: fusionauth/fusionauth-github-action@v1
         with:
           FUSIONAUTH_VERSION: 1.48.3
           FUSIONAUTH_APP_KICKSTART_DIRECTORY_PATH: kickstart
