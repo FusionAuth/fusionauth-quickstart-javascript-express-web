@@ -1,3 +1,2 @@
-const mainApp = require("../app");
-
-module.exports = mainApp;
+import app from "../src/index.ts";
+export default app;
