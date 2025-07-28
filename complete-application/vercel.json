@@ -7,7 +7,7 @@
     ],
     "functions": {
         "api/index.ts": {
-            "includeFiles": "complete-application/{templates,static}/**"
+            "includeFiles": "{templates,static}/**"
         }
     }
 }
