@@ -1,11 +1,14 @@
 //tag::top[]
 
+
 import FusionAuthClient from "@fusionauth/typescript-client";
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import pkceChallenge from 'pkce-challenge';
 import { GetPublicKeyOrSecret, verify } from 'jsonwebtoken';
 import jwksClient, { RsaSigningKey } from 'jwks-rsa';
+import { readFile } from 'fs/promises';
+import * as path from 'path';
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -96,9 +99,8 @@ app.get("/", async (req, res) => {
     const pkcePair = await pkceChallenge();
     res.cookie(userSession, { stateValue, verifier: pkcePair.code_verifier, challenge: pkcePair.code_challenge }, { httpOnly: true });
 
-    // Fetch HTML via HTTP for serverless compatibility
-    const htmlRes = await fetch(`${getBaseUrl(req)}/templates/home.html`);
-    const html = await htmlRes.text();
+    // Read HTML from filesystem for serverless compatibility
+    const html = await readFile(path.join(process.cwd(), 'templates/home.html'), 'utf-8');
     res.set('Content-Type', 'text/html').send(html);
   }
 });
@@ -173,8 +175,7 @@ app.get("/account", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    const htmlRes = await fetch(`${getBaseUrl(req)}/templates/account.html`);
-    const html = await htmlRes.text();
+    const html = await readFile(path.join(process.cwd(), 'templates/account.html'), 'utf-8');
     res.set('Content-Type', 'text/html').send(html);
   }
 });
@@ -186,8 +187,7 @@ app.get("/make-change", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    const htmlRes = await fetch(`${getBaseUrl(req)}/templates/make-change.html`);
-    const html = await htmlRes.text();
+    const html = await readFile(path.join(process.cwd(), 'templates/make-change.html'), 'utf-8');
     res.set('Content-Type', 'text/html').send(html);
   }
 });
