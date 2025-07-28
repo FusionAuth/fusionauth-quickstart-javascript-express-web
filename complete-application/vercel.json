@@ -6,8 +6,11 @@
         }
     ],
     "functions": {
-        "complete-application/api/index.ts": {
-            "includeFiles": "complete-application/{templates,static}/**"
+        "api/index.ts": {
+            "includeFiles": [
+                "templates/**",
+                "static/**"
+            ]
         }
     }
 }

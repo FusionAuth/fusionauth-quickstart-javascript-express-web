@@ -1,13 +1,16 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/$1" }
-  ],
-  "functions": {
-    "complete-application/api/index.ts": {
-      "includeFiles": [
-        "complete-application/templates/**",
-        "complete-application/static/**"
-      ]
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/api/$1"
+        }
+    ],
+    "functions": {
+        "complete-application/api/index.ts": {
+            "includeFiles": [
+                "complete-application/templates/**",
+                "complete-application/static/**"
+            ]
+        }
     }
-  }
 }
