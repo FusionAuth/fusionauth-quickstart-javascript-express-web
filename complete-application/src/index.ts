@@ -100,7 +100,7 @@ app.get("/", async (req, res) => {
     res.cookie(userSession, { stateValue, verifier: pkcePair.code_verifier, challenge: pkcePair.code_challenge }, { httpOnly: true });
 
     // Read HTML from filesystem for serverless compatibility
-    const html = await readFile(path.join(process.cwd(), 'complete-application', 'templates', 'home.html'), 'utf-8');
+    const html = await readFile(path.join(process.cwd(), 'templates', 'home.html'), 'utf-8');
     res.set('Content-Type', 'text/html').send(html);
   }
 });
@@ -175,7 +175,7 @@ app.get("/account", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    const html = await readFile(path.join(process.cwd(), 'complete-application', 'templates', 'account.html'), 'utf-8');
+    const html = await readFile(path.join(process.cwd(), 'templates', 'account.html'), 'utf-8');
     res.set('Content-Type', 'text/html').send(html);
   }
 });
@@ -187,7 +187,7 @@ app.get("/make-change", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    const html = await readFile(path.join(process.cwd(), 'complete-application', 'templates', 'make-change.html'), 'utf-8');
+    const html = await readFile(path.join(process.cwd(), 'templates', 'make-change.html'), 'utf-8');
     res.set('Content-Type', 'text/html').send(html);
   }
 });

@@ -8,6 +8,9 @@
     "functions": {
         "api/[...all].ts": {
             "includeFiles": "{templates,static}/**"
+        },
+        "api/index.ts": {
+            "includeFiles": "{templates,static}/**"
         }
     }
 }
