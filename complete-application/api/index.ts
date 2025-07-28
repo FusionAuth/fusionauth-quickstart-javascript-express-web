@@ -1,2 +1,2 @@
-import app from "../src/index";
+// File removed, replaced by [...all].ts
 export default app;
