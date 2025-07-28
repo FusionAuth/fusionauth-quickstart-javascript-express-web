@@ -232,7 +232,5 @@ app.get('/oauth2/logout', (req, res, next) => {
 
 // start the Express server
 //tag::app[]
-app.listen(port, () => {
-  console.log(`server started at http://localhost:${port}`);
-});
+export default app;
 //end::app[]
