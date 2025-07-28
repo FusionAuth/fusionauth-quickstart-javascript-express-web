@@ -1,13 +1,12 @@
 //tag::top[]
+
 import FusionAuthClient from "@fusionauth/typescript-client";
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import pkceChallenge from 'pkce-challenge';
 import { GetPublicKeyOrSecret, verify } from 'jsonwebtoken';
 import jwksClient, { RsaSigningKey } from 'jwks-rsa';
-import * as path from 'path';
 
-// Add environment variables
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -84,10 +83,8 @@ app.use(express.urlencoded());
 
 //end::top[]
 
-// Static Files
-//tag::static[]
-app.use('/static', express.static(path.join(process.cwd(), 'static/')));
-//end::static[]
+// Static Files (served by Vercel, not by Express in serverless)
+//app.use('/static', express.static(path.join(process.cwd(), 'static/')));
 
 //tag::homepage[]
 app.get("/", async (req, res) => {
@@ -99,7 +96,10 @@ app.get("/", async (req, res) => {
     const pkcePair = await pkceChallenge();
     res.cookie(userSession, { stateValue, verifier: pkcePair.code_verifier, challenge: pkcePair.code_challenge }, { httpOnly: true });
 
-    res.sendFile(path.join(process.cwd(), 'templates/home.html'));
+    // Fetch HTML via HTTP for serverless compatibility
+    const htmlRes = await fetch(`${getBaseUrl(req)}/templates/home.html`);
+    const html = await htmlRes.text();
+    res.set('Content-Type', 'text/html').send(html);
   }
 });
 //end::homepage[]
@@ -173,7 +173,9 @@ app.get("/account", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    res.sendFile(path.join(process.cwd(), 'templates/account.html'));
+    const htmlRes = await fetch(`${getBaseUrl(req)}/templates/account.html`);
+    const html = await htmlRes.text();
+    res.set('Content-Type', 'text/html').send(html);
   }
 });
 //end::account[]
@@ -184,7 +186,9 @@ app.get("/make-change", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    res.sendFile(path.join(process.cwd(), 'templates/make-change.html'));
+    const htmlRes = await fetch(`${getBaseUrl(req)}/templates/make-change.html`);
+    const html = await htmlRes.text();
+    res.set('Content-Type', 'text/html').send(html);
   }
 });
 
@@ -245,6 +249,7 @@ app.get('/oauth2/logout', (req, res, next) => {
   res.redirect(302, '/')
 });
 //end::oauth-logout[]
+
 
 // Only start the server if not running in Vercel (i.e., not in serverless)
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
