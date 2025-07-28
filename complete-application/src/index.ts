@@ -12,7 +12,20 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const port = 8080; // default port to listen
+const port = process.env.PORT || 8080; // Use Vercel's provided port or default
+
+// Determine base URL for redirects
+const getBaseUrl = (req?: express.Request) => {
+  if (process.env.VERCEL_URL) {
+    // Vercel provides VERCEL_URL without protocol
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (req) {
+    // Use request headers if available (for local dev or other platforms)
+    return req.protocol + '://' + req.get('host');
+  }
+  return `http://localhost:${port}`;
+};
 
 if (!process.env.clientId) {
   console.error('Missing clientId from .env');
@@ -98,9 +111,11 @@ app.get('/login', (req, res, next) => {
   // Cookie was cleared, just send back (hacky way)
   if (!userSessionCookie?.stateValue || !userSessionCookie?.challenge) {
     res.redirect(302, '/');
+    return;
   }
 
-  res.redirect(302, `${fusionAuthURL}/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:${port}/oauth-redirect&state=${userSessionCookie?.stateValue}&code_challenge=${userSessionCookie?.challenge}&code_challenge_method=S256`)
+  const redirectUri = `${getBaseUrl(req)}/oauth-redirect`;
+  res.redirect(302, `${fusionAuthURL}/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${userSessionCookie?.stateValue}&code_challenge=${userSessionCookie?.challenge}&code_challenge_method=S256`)
 });
 //end::login[]
 
@@ -121,10 +136,11 @@ app.get('/oauth-redirect', async (req, res, next) => {
 
   try {
     // Exchange Auth Code and Verifier for Access Token
+    const redirectUri = `${getBaseUrl(req)}/oauth-redirect`;
     const accessToken = (await client.exchangeOAuthCodeForAccessTokenUsingPKCE(authCode,
       clientId,
       clientSecret,
-      `http://localhost:${port}/oauth-redirect`,
+      redirectUri,
       userSessionCookie.verifier)).response;
 
     if (!accessToken.access_token) {
@@ -230,7 +246,11 @@ app.get('/oauth2/logout', (req, res, next) => {
 });
 //end::oauth-logout[]
 
-// start the Express server
-//tag::app[]
+// Only start the server if not running in Vercel (i.e., not in serverless)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`server started at ${getBaseUrl()}`);
+  });
+}
+
 export default app;
-//end::app[]
