@@ -86,7 +86,7 @@ app.use(express.urlencoded());
 
 // Static Files
 //tag::static[]
-app.use('/static', express.static(path.join(__dirname, '../static/')));
+app.use('/static', express.static(path.join(process.cwd(), 'complete-application/static/')));
 //end::static[]
 
 //tag::homepage[]
@@ -99,7 +99,7 @@ app.get("/", async (req, res) => {
     const pkcePair = await pkceChallenge();
     res.cookie(userSession, { stateValue, verifier: pkcePair.code_verifier, challenge: pkcePair.code_challenge }, { httpOnly: true });
 
-    res.sendFile(path.join(__dirname, '../templates/home.html'));
+    res.sendFile(path.join(process.cwd(), 'complete-application/templates/home.html'));
   }
 });
 //end::homepage[]
@@ -173,7 +173,7 @@ app.get("/account", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    res.sendFile(path.join(__dirname, '../templates/account.html'));
+    res.sendFile(path.join(process.cwd(), 'complete-application/templates/account.html'));
   }
 });
 //end::account[]
@@ -184,7 +184,7 @@ app.get("/make-change", async (req, res) => {
   if (!await validateUser(userTokenCookie)) {
     res.redirect(302, '/');
   } else {
-    res.sendFile(path.join(__dirname, '../templates/make-change.html'));
+    res.sendFile(path.join(process.cwd(), 'complete-application/templates/make-change.html'));
   }
 });
 
