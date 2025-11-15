@@ -100,7 +100,7 @@ app.get('/login', (req, res, next) => {
     res.redirect(302, '/');
   }
 
-  res.redirect(302, `${fusionAuthURL}/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:${port}/oauth-redirect&state=${userSessionCookie?.stateValue}&code_challenge=${userSessionCookie?.challenge}&code_challenge_method=S256`)
+  res.redirect(302, `${fusionAuthURL}/oauth2/authorize?scope=email%20profile%20openid&client_id=${clientId}&response_type=code&redirect_uri=http://localhost:${port}/oauth-redirect&state=${userSessionCookie?.stateValue}&code_challenge=${userSessionCookie?.challenge}&code_challenge_method=S256`)
 });
 //end::login[]
 
@@ -134,12 +134,13 @@ app.get('/oauth-redirect', async (req, res, next) => {
     res.cookie(userToken, accessToken, { httpOnly: true })
 
     // Exchange Access Token for User
-    const userResponse = (await client.retrieveUserUsingJWT(accessToken.access_token)).response;
-    if (!userResponse?.user) {
-      console.error('Failed to get User from access token, redirecting home.');
+    const userResponse = (await client.retrieveUserInfoFromAccessToken(accessToken.access_token)).response;
+    console.log(userResponse);
+    if (!userResponse) {
+      console.error('Failed to get User info from access token, redirecting home.');
       res.redirect(302, '/');
     }
-    res.cookie(userDetails, userResponse.user);
+    res.cookie(userDetails, userResponse);
 
     res.redirect(302, '/account');
   } catch (err: any) {
